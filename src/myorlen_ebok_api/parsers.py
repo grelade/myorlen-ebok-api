@@ -8,6 +8,7 @@ keep ``Decimal`` exact).
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation
@@ -38,6 +39,8 @@ from .models import (
 
 Json = Mapping[str, Any]
 
+_ISO_FRACTION = re.compile(r"^([^.]+)\.(\d+)(.*)$")
+
 
 # ---- scalars -----------------------------------------------------------------
 
@@ -50,12 +53,13 @@ def to_datetime(value: Any) -> datetime | None:
     try:
         dt = datetime.fromisoformat(text)
     except ValueError:
-        # Python 3.10 fromisoformat only accepts 0, 3 or 6 fractional digits
-        head, _, rest = text.partition(".")
-        frac = "".join(c for c in rest if c.isdigit())
-        zone = rest[len(frac) :]
+        # Python 3.10 fromisoformat only accepts 0, 3 or 6 fractional digits: pad/trim to 6
+        m = _ISO_FRACTION.match(text)
+        if not m:
+            return None
+        head, frac, zone = m.groups()
         try:
-            dt = datetime.fromisoformat(f"{head}.{frac[:6].ljust(6, '0')}{zone}" if frac else head + zone)
+            dt = datetime.fromisoformat(f"{head}.{frac[:6].ljust(6, '0')}{zone}")
         except ValueError:
             return None
     if dt.tzinfo is None:
