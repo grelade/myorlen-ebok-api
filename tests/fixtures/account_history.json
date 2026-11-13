@@ -1,0 +1,36 @@
+{
+ "HistoryList": [
+  {
+   "Date": "2022-10-26T18:42:23.373000Z",
+   "Type": "Zapłata za fakturę",
+   "Description": "Numer faktury: 1234567/1/NO,1234567/2/NO,1234567/3/NO,1234567/5/NO,1234567/4/NO,1234567/6/NO,1234567/1/2022/F, kwota: 627.83"
+  },
+  {
+   "Date": "2021-09-01T07:26:14.410000Z",
+   "Type": "Zgoda na e-fakturę",
+   "Description": "Numer umowy: 100/O/ABC/12345/09"
+  },
+  {
+   "Date": "2021-06-16T16:18:33.030000Z",
+   "Type": "Zmiana konfiguracji zgód marketingowych",
+   "Description": "Zaznaczono: Zapoznałem/-am się z klauzulą o przetwarzaniu danych osobowych"
+  },
+  {
+   "Date": "2021-06-16T16:18:32.947000Z",
+   "Type": "Zmiana konfiguracji zgód marketingowych",
+   "Description": "Zaznaczono: Zapoznałem/-am się z <span class=\"getRegulation\">Regulaminem usługi eBOK</span> i akceptuję jego treść."
+  },
+  {
+   "Date": "2021-06-16T16:18:32.770000Z",
+   "Type": "Założenie nowego konta",
+   "Description": "eBOK (jan.kowalski@example.com)"
+  }
+ ],
+ "Code": 0,
+ "Message": null,
+ "DisplayToEndUser": false,
+ "EndUserMessage": null,
+ "TokenExpireDate": "2026-11-13T19:24:45.433631Z",
+ "TokenExpireDateUtc": "2026-11-13T18:24:45.433631Z",
+ "ConfigUpdateDateUtc": "2026-11-04T12:06:38.160000Z"
+}

@@ -1,0 +1,43 @@
+{
+ "Notifications": [
+  {
+   "Id": "00000000-0000-0000-0000-000000000001",
+   "Title": "Nowe faktury do zapłaty",
+   "Body": "Wystawiliśmy nowe faktury.",
+   "DateCreatedUtc": "2026-10-28T09:40:54.833000Z",
+   "Type": "Invoices",
+   "ObjectId": null
+  },
+  {
+   "Id": "00000000-0000-0000-0000-000000000002",
+   "Title": "Powiadomienie o zbliżającej się płatności",
+   "Body": "Zbliża się termin płatności za fakturę nr P/1234567/0001/25/5.",
+   "DateCreatedUtc": "2026-08-26T10:33:48.987000Z",
+   "Type": "Invoices",
+   "ObjectId": "P/1234567/0001/25/5"
+  },
+  {
+   "Id": "00000000-0000-0000-0000-000000000003",
+   "Title": "Nowe faktury do zapłaty",
+   "Body": "Wystawiliśmy nowe faktury.",
+   "DateCreatedUtc": "2025-10-15T09:46:44.953000Z",
+   "Type": "Invoices",
+   "ObjectId": null
+  },
+  {
+   "Id": "00000000-0000-0000-0000-000000000004",
+   "Title": "Powiadomienie o zbliżającej się płatności",
+   "Body": "Zbliża się termin płatności za fakturę nr P/1234567/0001/24/4.",
+   "DateCreatedUtc": "2025-06-21T13:00:21.407000Z",
+   "Type": "Invoices",
+   "ObjectId": "P/1234567/0001/24/4"
+  }
+ ],
+ "Code": 0,
+ "Message": null,
+ "DisplayToEndUser": true,
+ "EndUserMessage": null,
+ "TokenExpireDate": "2026-11-13T19:24:45.339938Z",
+ "TokenExpireDateUtc": "2026-11-13T18:24:45.339938Z",
+ "ConfigUpdateDateUtc": "2026-11-04T12:06:38.160000Z"
+}

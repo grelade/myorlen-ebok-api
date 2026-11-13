@@ -1,0 +1,43 @@
+{
+ "ComparisonPercent": 15.0,
+ "IsPlusSignForPercent": false,
+ "PreviousYearData": [
+  {
+   "WearByYear": 412.0,
+   "Year": "2025",
+   "ChartItems": [
+    {
+     "Label": "październik",
+     "ZoneLabel": null,
+     "Value": 1751.0,
+     "Wear": 412.0,
+     "ReadingDateUtc": "2025-10-14T00:00:00.000000Z",
+     "Type": 0
+    }
+   ]
+  }
+ ],
+ "ThisYearData": [
+  {
+   "WearByYear": 487.0,
+   "Year": "2026",
+   "ChartItems": [
+    {
+     "Label": "październik",
+     "ZoneLabel": null,
+     "Value": 2238.0,
+     "Wear": 487.0,
+     "ReadingDateUtc": "2026-10-27T00:00:00.000000Z",
+     "Type": 1
+    }
+   ]
+  }
+ ],
+ "Code": 0,
+ "Message": null,
+ "DisplayToEndUser": false,
+ "EndUserMessage": null,
+ "TokenExpireDate": "2026-11-13T19:25:07.328158Z",
+ "TokenExpireDateUtc": "2026-11-13T18:25:07.328158Z",
+ "ConfigUpdateDateUtc": "2026-11-04T12:06:38.160000Z"
+}

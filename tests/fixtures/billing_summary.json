@@ -1,0 +1,11 @@
+{
+ "Status": "Paid",
+ "Value": null,
+ "Code": 0,
+ "Message": null,
+ "DisplayToEndUser": true,
+ "EndUserMessage": null,
+ "TokenExpireDate": "2026-11-13T19:24:44.816937Z",
+ "TokenExpireDateUtc": "2026-11-13T18:24:44.816937Z",
+ "ConfigUpdateDateUtc": "2026-11-04T12:06:38.160000Z"
+}

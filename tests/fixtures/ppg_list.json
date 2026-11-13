@@ -1,0 +1,46 @@
+{
+ "PpgList": [
+  {
+   "Address": {
+    "Ulica": "Testowa",
+    "UlicaTyp": "ul.",
+    "NrBudynku": "1a",
+    "NrLokalu": "2",
+    "KodPocztowy": "00-001",
+    "Miejscowosc": "Warszawa",
+    "HasAnyValue": true
+   },
+   "IdPPG": "8018590000000000000001",
+   "MeterNumber": "8018590000000000000001",
+   "ReadingDateUtc": "2026-10-27T00:00:00.000000Z",
+   "ReadingValue": 2238.0,
+   "ContractNumber": "100/O/ABC/12345/09",
+   "HasT12": false,
+   "ReadingAdded": false,
+   "ReadingDateAddedUtc": null,
+   "ReadingCanBeCancelled": false,
+   "Tariff": "W-2.1",
+   "HasHistory": true,
+   "Type": "PPG",
+   "IdLocal": "1111111",
+   "ClientNumber": "1234567",
+   "InstallationNumber": "CSB",
+   "Color": "",
+   "AgreementName": "",
+   "CanCreateHomeAssistant": true,
+   "AddReadingMode": "AllowBeforePeriods",
+   "IsInMigration": false,
+   "IsInMigrationRK": false,
+   "IsInMigrationRW": false,
+   "IsInMigrationCSB": false,
+   "IsCompany": false
+  }
+ ],
+ "Code": 0,
+ "Message": null,
+ "DisplayToEndUser": false,
+ "EndUserMessage": null,
+ "TokenExpireDate": "2026-11-13T19:24:44.623815Z",
+ "TokenExpireDateUtc": "2026-11-13T18:24:44.623815Z",
+ "ConfigUpdateDateUtc": "2026-11-04T12:06:38.160000Z"
+}

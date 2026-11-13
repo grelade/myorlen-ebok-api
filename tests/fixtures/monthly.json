@@ -1,0 +1,23 @@
+{
+ "ChartData": {
+  "październik_2026": [
+   {
+    "Label": "październik 2026",
+    "ZoneLabel": null,
+    "Year": "2026",
+    "Value": 2238.0,
+    "Wear": 487.0,
+    "Type": 5,
+    "ReadingDateUtc": "2026-10-27T00:00:00.000000Z",
+    "Period": "14.10.2025 - 27.10.2026"
+   }
+  ]
+ },
+ "Code": 0,
+ "Message": null,
+ "DisplayToEndUser": false,
+ "EndUserMessage": null,
+ "TokenExpireDate": "2026-11-13T19:25:07.211731Z",
+ "TokenExpireDateUtc": "2026-11-13T18:25:07.211731Z",
+ "ConfigUpdateDateUtc": "2026-11-04T12:06:38.160000Z"
+}

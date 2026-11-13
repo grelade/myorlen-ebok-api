@@ -1,0 +1,22 @@
+{
+ "RelatedAccounts": [
+  {
+   "ClientName": "",
+   "PublicId": "00000000-0000-0000-0000-000000000001",
+   "Current": true,
+   "ClientNumber": "7654321",
+   "DocumentNumber": null,
+   "Pesel": "800********",
+   "Nip": null,
+   "ContractNumber": null,
+   "Saldo": null
+  }
+ ],
+ "Code": 0,
+ "Message": null,
+ "DisplayToEndUser": true,
+ "EndUserMessage": null,
+ "TokenExpireDate": "2026-11-13T19:24:45.555342Z",
+ "TokenExpireDateUtc": "2026-11-13T18:24:45.555342Z",
+ "ConfigUpdateDateUtc": "2026-11-04T12:06:38.160000Z"
+}
