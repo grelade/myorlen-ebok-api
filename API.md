@@ -1,9 +1,9 @@
-# PGNiG / myORLEN eBOK (ebok.myorlen.pl): reverse-engineered API reference
+# myORLEN eBOK (ebok.myorlen.pl, formerly PGNiG eBOK): reverse-engineered API reference
 
 Mapped in November 2026 against a live household account (one gas agreement, tariff W-2.1)
 and the web app bundle (`/static/js/main.js?v=1.1646`). Unofficial: the operator can change
-any of this without notice. Implemented in `src/pgnig_ebok_api/client.py` (HTTP) and
-`src/pgnig_ebok_api/parsers.py` (JSON parsing). All example values below are fake.
+any of this without notice. Implemented in `src/myorlen_ebok_api/client.py` (HTTP) and
+`src/myorlen_ebok_api/parsers.py` (JSON parsing). All example values below are fake.
 
 > **Host.** `https://ebok.pgnig.pl/` now redirects (301) to `https://ebok.myorlen.pl/`.
 > Only the new host is used.

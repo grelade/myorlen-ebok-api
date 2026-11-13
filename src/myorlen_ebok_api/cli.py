@@ -1,7 +1,8 @@
-"""``pgnig-ebok-api`` command line interface. Prints JSON to stdout; files are written to disk.
+"""``myorlen-ebok-api`` command line interface. Prints JSON to stdout; files are written to disk.
 
-Credentials come from ``PGNIG_USER`` / ``PGNIG_PASS`` (environment or a ``.env`` file in
-the current directory). The session token is cached in ``~/.cache/pgnig-ebok-api/session.json``.
+Credentials come from ``MYORLEN_USER`` / ``MYORLEN_PASS`` (environment or a ``.env`` file in
+the current directory); the old ``PGNIG_USER`` / ``PGNIG_PASS`` names are accepted too.
+The session token is cached in ``~/.cache/myorlen-ebok-api/session.json``.
 """
 
 from __future__ import annotations
@@ -16,11 +17,11 @@ from pathlib import Path
 from typing import Any
 
 from . import __version__
-from .client import PgnigClient
-from .exceptions import PgnigError
+from .client import MyorlenClient
+from .exceptions import MyorlenError
 from .models import DownloadedFile, InvoiceFilter, to_jsonable
 
-DEFAULT_SESSION_FILE = Path("~/.cache/pgnig-ebok-api/session.json")
+DEFAULT_SESSION_FILE = Path("~/.cache/myorlen-ebok-api/session.json")
 
 
 def load_dotenv(path: Path) -> None:
@@ -51,13 +52,13 @@ def _save(file: DownloadedFile, out: str) -> Path:
 
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(
-        prog="pgnig-ebok-api", description="Unofficial PGNiG / myORLEN eBOK (ebok.myorlen.pl) client"
+        prog="myorlen-ebok-api", description="Unofficial myORLEN (formerly PGNiG) eBOK client"
     )
     ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     ap.add_argument("--ppg", help="meter point id (needed only when the account has several)")
     ap.add_argument(
         "--session-file",
-        default=os.environ.get("PGNIG_SESSION_FILE", str(DEFAULT_SESSION_FILE)),
+        default=os.environ.get("MYORLEN_SESSION_FILE", str(DEFAULT_SESSION_FILE)),
         help="where to cache the session token ('' disables)",
     )
     sub = ap.add_subparsers(dest="cmd", required=True, metavar="COMMAND")
@@ -105,7 +106,7 @@ def build_parser() -> argparse.ArgumentParser:
     return ap
 
 
-def run(args: argparse.Namespace, client: PgnigClient) -> None:
+def run(args: argparse.Namespace, client: MyorlenClient) -> None:
     ppg = args.ppg
     cmd = args.cmd
     if cmd == "user":
@@ -164,15 +165,16 @@ def run(args: argparse.Namespace, client: PgnigClient) -> None:
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     load_dotenv(Path.cwd() / ".env")
-    user, password = os.environ.get("PGNIG_USER"), os.environ.get("PGNIG_PASS")
+    user = os.environ.get("MYORLEN_USER") or os.environ.get("PGNIG_USER")
+    password = os.environ.get("MYORLEN_PASS") or os.environ.get("PGNIG_PASS")
     session_file = args.session_file or None
     if not (user and password) and not (session_file and Path(session_file).expanduser().exists()):
-        print("error: set PGNIG_USER and PGNIG_PASS (environment or .env)", file=sys.stderr)
+        print("error: set MYORLEN_USER and MYORLEN_PASS (environment or .env)", file=sys.stderr)
         return 2
     try:
-        with PgnigClient(user, password, session_file=session_file) as client:
+        with MyorlenClient(user, password, session_file=session_file) as client:
             run(args, client)
-    except PgnigError as e:
+    except MyorlenError as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
     return 0

@@ -11,7 +11,7 @@ from typing import Any
 import pytest
 import responses
 
-from pgnig_ebok_api import PgnigClient
+from myorlen_ebok_api import MyorlenClient
 
 FIXTURES = Path(__file__).parent / "fixtures"
 BASE = "https://ebok.myorlen.pl"
@@ -32,9 +32,9 @@ def mocked() -> Iterator[responses.RequestsMock]:
 
 
 @pytest.fixture
-def client(mocked: responses.RequestsMock) -> PgnigClient:
+def client(mocked: responses.RequestsMock) -> MyorlenClient:
     """A client that already holds a token (no login round-trip)."""
-    c = PgnigClient("user@example.com", "secret")
+    c = MyorlenClient("user@example.com", "secret")
     c.token = TOKEN
     return c
 

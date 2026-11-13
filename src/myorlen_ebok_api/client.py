@@ -1,4 +1,4 @@
-"""HTTP client for the PGNiG / myORLEN eBOK (https://ebok.myorlen.pl, formerly ebok.pgnig.pl).
+"""HTTP client for the myORLEN eBOK (https://ebok.myorlen.pl, formerly ebok.pgnig.pl).
 
 The portal is a React single-page app over a JSON API on the same host. Login returns a
 token that every request sends in the ``AuthToken`` header; all calls carry the query
@@ -49,7 +49,7 @@ API_VERSION = "3.0"
 DEFAULT_USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128 Safari/537.36"
 )
-DEVICE_NAME = "pgnig-ebok-api"
+DEVICE_NAME = "myorlen-ebok-api"
 
 # endpoints (paths relative to BASE_URL)
 EP_LOGIN = "/auth/login"
@@ -109,10 +109,10 @@ def _filename(r: requests.Response) -> str | None:
     return unquote(m.group(1).strip()) if m else None
 
 
-class PgnigClient:
+class MyorlenClient:
     """Logged-in session against ebok.myorlen.pl.
 
-    >>> with PgnigClient("user@example.com", "secret") as c:
+    >>> with MyorlenClient("user@example.com", "secret") as c:
     ...     for inv in c.iter_invoices():
     ...         print(inv.number, inv.gross_amount, inv.is_paid)
 
@@ -152,7 +152,7 @@ class PgnigClient:
 
     # ---- context manager -----------------------------------------------------
 
-    def __enter__(self) -> PgnigClient:
+    def __enter__(self) -> MyorlenClient:
         return self
 
     def __exit__(self, *exc: object) -> None:

@@ -1,8 +1,11 @@
-# pgnig-ebok-api
+# myorlen-ebok-api
 
-Unofficial Python SDK and command-line client for the **PGNiG / myORLEN gas eBOK**
-([ebok.myorlen.pl](https://ebok.myorlen.pl), formerly `ebok.pgnig.pl`), the customer portal of
-the Polish gas retailer (PGNiG Obrót Detaliczny, now myORLEN).
+Unofficial Python SDK and command-line client for the **myORLEN eBOK**
+([ebok.myorlen.pl](https://ebok.myorlen.pl)), the customer portal of the Polish gas retailer myORLEN.
+
+> **Previous name: PGNiG eBOK.** The portal used to be the eBOK of PGNiG Obrót Detaliczny at
+> `ebok.pgnig.pl`; after the rebranding to myORLEN that address redirects to `ebok.myorlen.pl`.
+> Existing PGNiG eBOK logins work unchanged.
 
 It logs in with your eBOK e-mail and password and gives typed access to what the portal shows:
 
@@ -21,18 +24,18 @@ It logs in with your eBOK e-mail and password and gives typed access to what the
 ## Install
 
 ```bash
-pip install pgnig-ebok-api        # or: uv add pgnig-ebok-api
+pip install myorlen-ebok-api        # or: uv add myorlen-ebok-api
 ```
 
-Latest unreleased code: `pip install git+https://github.com/grelade/pgnig-ebok-api`.
+Latest unreleased code: `pip install git+https://github.com/grelade/myorlen-ebok-api`.
 
 Requires Python 3.10+.
 
 ## Command line
 
 ```bash
-export PGNIG_USER=you@example.com PGNIG_PASS='…'     # or put them in ./.env
-uvx pgnig-ebok-api balance
+export MYORLEN_USER=you@example.com MYORLEN_PASS='…'     # or put them in ./.env (PGNIG_USER / PGNIG_PASS also work)
+uvx myorlen-ebok-api balance
 ```
 
 | Command | Output |
@@ -50,14 +53,14 @@ uvx pgnig-ebok-api balance
 
 Output is JSON (amounts are strings to keep `Decimal` precision). Global options: `--ppg ID`
 (needed only for accounts with several meter points) and `--session-file PATH` (default
-`~/.cache/pgnig-ebok-api/session.json`; the token is reused so repeated runs don't log in again).
+`~/.cache/myorlen-ebok-api/session.json`; the token is reused so repeated runs don't log in again).
 
 ## Library
 
 ```python
-from pgnig_ebok_api import PgnigClient
+from myorlen_ebok_api import MyorlenClient
 
-with PgnigClient("you@example.com", "secret", session_file="~/.cache/pgnig-ebok-api/session.json") as c:
+with MyorlenClient("you@example.com", "secret", session_file="~/.cache/myorlen-ebok-api/session.json") as c:
     user = c.get_user()
     print(user.balance, user.amount_to_pay)
 
@@ -79,7 +82,7 @@ All methods: `get_user`, `get_related_accounts`, `get_billing_summary`, `get_agr
 `get_yearly_consumption`, `get_notifications`, `get_unread_count`, `get_email_settings`,
 `get_contact_history`, `iter_contact_history`; session: `login`, `logout`, `save_session`.
 
-Errors derive from `pgnig_ebok_api.PgnigError` (`AuthenticationError`, `ApiError`, `ParseError`,
+Errors derive from `myorlen_ebok_api.MyorlenError` (`AuthenticationError`, `ApiError`, `ParseError`,
 `NotFoundError`).
 
 ## Development
@@ -88,7 +91,7 @@ Errors derive from `pgnig_ebok_api.PgnigError` (`AuthenticationError`, `ApiError
 uv sync                          # creates .venv with dev tools
 uv run pytest                    # offline tests (HTTP mocked, anonymised fixtures)
 uv run ruff check . && uv run ruff format --check . && uv run mypy
-PGNIG_LIVE=1 uv run pytest -m live   # read-only smoke tests against the real site (.env credentials)
+MYORLEN_LIVE=1 uv run pytest -m live   # read-only smoke tests against the real site (.env credentials)
 ```
 
 See [AGENTS.md](AGENTS.md) for the project layout and conventions.

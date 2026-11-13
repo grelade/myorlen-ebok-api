@@ -5,8 +5,8 @@ from decimal import Decimal
 
 import pytest
 
-from pgnig_ebok_api import ParseError, parsers
-from pgnig_ebok_api.models import Address
+from myorlen_ebok_api import ParseError, parsers
+from myorlen_ebok_api.models import Address
 
 from .conftest import AGREEMENT, CLIENT, PPG, fixture_json
 

@@ -4,8 +4,8 @@ Guidance for coding agents working on this repository.
 
 ## What this is
 
-`pgnig-ebok-api`: an unofficial Python SDK + CLI for the PGNiG / myORLEN gas eBOK
-(https://ebok.myorlen.pl, formerly ebok.pgnig.pl). The portal is a React SPA over a JSON API
+`myorlen-ebok-api`: an unofficial Python SDK + CLI for the myORLEN gas eBOK
+(https://ebok.myorlen.pl; previously PGNiG eBOK at ebok.pgnig.pl). The portal is a React SPA over a JSON API
 on the same host; the SDK logs in with e-mail + password, keeps the returned token and calls
 the same endpoints. **API.md is the endpoint reference**: read it before touching the client,
 and update it whenever you learn something new about the site.
@@ -13,18 +13,18 @@ and update it whenever you learn something new about the site.
 ## Layout
 
 ```
-src/pgnig_ebok_api/
-  client.py      PgnigClient: login, token handling, one method per feature (I/O only)
+src/myorlen_ebok_api/
+  client.py      MyorlenClient: login, token handling, one method per feature (I/O only)
   parsers.py     pure functions JSON -> models; all field names of the API live here
   models.py      dataclasses (Decimal money, date dates), InvoiceFilter enum, to_jsonable()
-  exceptions.py  PgnigError > AuthenticationError | ApiError | ParseError | NotFoundError
-  cli.py         `pgnig-ebok-api` argparse CLI, JSON on stdout
+  exceptions.py  MyorlenError > AuthenticationError | ApiError | ParseError | NotFoundError
+  cli.py         `myorlen-ebok-api` argparse CLI, JSON on stdout
 tests/
   fixtures/      ANONYMISED captures of real API responses
   test_parsers.py  parsers against fixtures
   test_client.py   client flows with HTTP mocked by `responses` (asserts request params too)
   test_cli.py      CLI end to end with mocked HTTP
-  test_live.py     read-only checks against the real site, skipped unless PGNIG_LIVE=1
+  test_live.py     read-only checks against the real site, skipped unless MYORLEN_LIVE=1
 ```
 
 ## Commands
@@ -34,8 +34,8 @@ uv sync                                   # install (uses uv.lock)
 uv run pytest                             # offline test suite, must stay green
 uv run ruff check . && uv run ruff format --check .
 uv run mypy                               # strict mode on src/
-PGNIG_LIVE=1 uv run pytest -m live        # needs PGNIG_USER / PGNIG_PASS (env or .env)
-uv run pgnig-ebok-api --help              # CLI
+MYORLEN_LIVE=1 uv run pytest -m live        # needs MYORLEN_USER / MYORLEN_PASS (env or .env)
+uv run myorlen-ebok-api --help              # CLI
 ```
 
 Add dependencies with `uv add` / `uv add --dev` so `uv.lock` stays in sync. CI runs ruff,
@@ -46,7 +46,7 @@ mypy and pytest on Python 3.10–3.13 (`.github/workflows/ci.yml`).
 1. Find the route name in the web bundle (`https://ebok.myorlen.pl/static/js/main.js`): the
    route table is `var H={auth:{…},crm:{…}}`, call sites look like
    `Ct.getData("get_invoices_v2",{pageNumber:1,pageSize:12})` or `Ct.get("crm.get_ppg_list")`.
-2. Call it through `PgnigClient._get()` (adds `api-version=3.0` and the `AuthToken` header,
+2. Call it through `MyorlenClient._get()` (adds `api-version=3.0` and the `AuthToken` header,
    re-logs in once on 401, raises `ApiError` on a non-zero `Code`) or `_download()` for files.
 3. Parse with a pure function in `parsers.py` into a dataclass from `models.py`.
 
@@ -75,7 +75,7 @@ publishing; there is no token to manage.
 1. Bump the version: `uv version --bump patch` (or `minor` / `major`); this updates `pyproject.toml` and `uv.lock`.
 2. Commit, then tag and push: `git tag v$(uv version --short) && git push && git push --tags`.
 3. The workflow runs CI, checks the tag matches the version, builds and smoke-tests the wheel,
-   publishes to https://pypi.org/project/pgnig-ebok-api/ and creates a GitHub release with the files attached.
+   publishes to https://pypi.org/project/myorlen-ebok-api/ and creates a GitHub release with the files attached.
 
 PyPI versions can never be re-uploaded, so a broken release needs a new version number.
 

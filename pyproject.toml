@@ -1,7 +1,7 @@
 [project]
-name = "pgnig-ebok-api"
+name = "myorlen-ebok-api"
 version = "0.1.0"
-description = "Unofficial Python SDK and CLI for the PGNiG / myORLEN gas eBOK (ebok.myorlen.pl): agreements, invoices, PDFs, payments, meter readings, consumption."
+description = "Unofficial Python SDK and CLI for the myORLEN gas eBOK (ebok.myorlen.pl, formerly PGNiG eBOK): agreements, invoices, PDFs, payments, meter readings, consumption."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -23,11 +23,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/grelade/pgnig-ebok-api"
-Issues = "https://github.com/grelade/pgnig-ebok-api/issues"
+Homepage = "https://github.com/grelade/myorlen-ebok-api"
+Issues = "https://github.com/grelade/myorlen-ebok-api/issues"
 
 [project.scripts]
-pgnig-ebok-api = "pgnig_ebok_api.cli:main"
+myorlen-ebok-api = "myorlen_ebok_api.cli:main"
 
 [dependency-groups]
 dev = [
@@ -66,4 +66,4 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
-markers = ["live: hits the real ebok.myorlen.pl (needs PGNIG_USER/PGNIG_PASS and PGNIG_LIVE=1)"]
+markers = ["live: hits the real ebok.myorlen.pl (needs MYORLEN_USER/MYORLEN_PASS and MYORLEN_LIVE=1)"]

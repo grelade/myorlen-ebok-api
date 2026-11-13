@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import responses
 
-from pgnig_ebok_api import cli
+from myorlen_ebok_api import cli
 
 from .conftest import AGREEMENT, BASE, PPG, add_fixture, login_ok
 
@@ -14,8 +14,8 @@ from .conftest import AGREEMENT, BASE, PPG, add_fixture, login_ok
 @pytest.fixture
 def env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     monkeypatch.chdir(tmp_path)  # no stray .env
-    monkeypatch.setenv("PGNIG_USER", "u@example.com")
-    monkeypatch.setenv("PGNIG_PASS", "secret")
+    monkeypatch.setenv("MYORLEN_USER", "u@example.com")
+    monkeypatch.setenv("MYORLEN_PASS", "secret")
     return tmp_path
 
 
@@ -30,19 +30,21 @@ def run(capsys: pytest.CaptureFixture[str], *argv: str) -> tuple[int, object]:
 
 def test_missing_credentials(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("MYORLEN_USER", raising=False)
+    monkeypatch.delenv("MYORLEN_PASS", raising=False)
     monkeypatch.delenv("PGNIG_USER", raising=False)
     monkeypatch.delenv("PGNIG_PASS", raising=False)
     assert cli.main(["--session-file", "", "user"]) == 2
 
 
 def test_dotenv(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    monkeypatch.delenv("PGNIG_USER", raising=False)
-    (tmp_path / ".env").write_text("# c\nPGNIG_USER='a@b.c'\nbad line\n")
+    monkeypatch.delenv("MYORLEN_USER", raising=False)
+    (tmp_path / ".env").write_text("# c\nMYORLEN_USER='a@b.c'\nbad line\n")
     cli.load_dotenv(tmp_path / ".env")
     import os
 
-    assert os.environ["PGNIG_USER"] == "a@b.c"
-    monkeypatch.delenv("PGNIG_USER")
+    assert os.environ["MYORLEN_USER"] == "a@b.c"
+    monkeypatch.delenv("MYORLEN_USER")
 
 
 def test_balance_and_invoices(
@@ -131,3 +133,18 @@ def test_error_exit_code(
     mocked.add("POST", BASE + "/auth/login", status=403)
     assert cli.main(["--session-file", "", "user"]) == 1
     assert "login failed" in capsys.readouterr().err
+
+
+def test_legacy_pgnig_env_names(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, mocked: responses.RequestsMock
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("MYORLEN_USER", raising=False)
+    monkeypatch.delenv("MYORLEN_PASS", raising=False)
+    monkeypatch.setenv("PGNIG_USER", "old@example.com")
+    monkeypatch.setenv("PGNIG_PASS", "secret")
+    login_ok(mocked)
+    add_fixture(mocked, "/crm/get-billing-summary", "billing_summary")
+    add_fixture(mocked, "/crm/get-user-data", "user_data")
+    assert cli.main(["--session-file", "", "balance"]) == 0
+    assert json.loads(mocked.calls[0].request.body or b"{}")["Identificator"] == "old@example.com"

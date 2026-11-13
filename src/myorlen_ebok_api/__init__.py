@@ -1,9 +1,9 @@
-"""Unofficial Python SDK for the PGNiG / myORLEN gas eBOK (ebok.myorlen.pl)."""
+"""Unofficial Python SDK for the myORLEN gas eBOK (ebok.myorlen.pl, formerly PGNiG eBOK)."""
 
 from importlib.metadata import PackageNotFoundError, version
 
-from .client import BASE_URL, PgnigClient
-from .exceptions import ApiError, AuthenticationError, NotFoundError, ParseError, PgnigError
+from .client import BASE_URL, MyorlenClient
+from .exceptions import ApiError, AuthenticationError, MyorlenError, NotFoundError, ParseError
 from .models import (
     Address,
     Agreement,
@@ -29,7 +29,7 @@ from .models import (
 )
 
 try:
-    __version__ = version("pgnig-ebok-api")
+    __version__ = version("myorlen-ebok-api")
 except PackageNotFoundError:  # pragma: no cover - running from a source tree
     __version__ = "0.0.0"
 
@@ -50,12 +50,12 @@ __all__ = [
     "InvoiceFilter",
     "InvoicePage",
     "MeterPoint",
+    "MyorlenClient",
+    "MyorlenError",
     "NotFoundError",
     "Notification",
     "ParseError",
     "Payment",
-    "PgnigClient",
-    "PgnigError",
     "Reading",
     "ReadingPage",
     "RelatedAccount",

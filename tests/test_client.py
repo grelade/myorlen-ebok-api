@@ -8,12 +8,12 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 import responses
 
-from pgnig_ebok_api import (
+from myorlen_ebok_api import (
     ApiError,
     AuthenticationError,
     InvoiceFilter,
+    MyorlenClient,
     NotFoundError,
-    PgnigClient,
 )
 
 from .conftest import AGREEMENT, BASE, CLIENT, PPG, TOKEN, add_fixture, add_json, fixture_json, login_ok
@@ -30,7 +30,7 @@ def query(call: responses.Call) -> dict[str, str]:
 def test_login_sends_credentials_and_stores_token(mocked: responses.RequestsMock, tmp_path: Path) -> None:
     login_ok(mocked, "tok-1")
     sf = tmp_path / "s.json"
-    c = PgnigClient("u@example.com", "pw", session_file=sf, device_id="dev-1")
+    c = MyorlenClient("u@example.com", "pw", session_file=sf, device_id="dev-1")
     c.login()
     call = mocked.calls[0]
     assert query(call)["api-version"] == "3.0"
@@ -40,7 +40,7 @@ def test_login_sends_credentials_and_stores_token(mocked: responses.RequestsMock
         "AccessPin": "pw",
         "DeviceType": "Web",
         "DeviceId": "dev-1",
-        "DeviceName": "pgnig-ebok-api",
+        "DeviceName": "myorlen-ebok-api",
     }
     assert c.token == "tok-1"
     saved = json.loads(sf.read_text())
@@ -53,7 +53,7 @@ def test_session_file_reused(mocked: responses.RequestsMock, tmp_path: Path) -> 
     future = (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
     sf.write_text(json.dumps({"token": "cached", "expires": future, "device_id": "dev-x"}))
     add_fixture(mocked, "/crm/get-billing-summary", "billing_summary")
-    c = PgnigClient("u", "p", session_file=sf)
+    c = MyorlenClient("u", "p", session_file=sf)
     assert c.token == "cached" and c.device_id == "dev-x"
     c.get_billing_summary()
     assert len(mocked.calls) == 1
@@ -63,31 +63,31 @@ def test_session_file_reused(mocked: responses.RequestsMock, tmp_path: Path) -> 
 def test_expired_session_file_ignored(tmp_path: Path) -> None:
     sf = tmp_path / "s.json"
     sf.write_text(json.dumps({"token": "old", "expires": "2000-01-01T00:00:00Z", "device_id": "dev-x"}))
-    c = PgnigClient("u", "p", session_file=sf)
+    c = MyorlenClient("u", "p", session_file=sf)
     assert c.token is None and c.device_id == "dev-x"
     sf.write_text("not json")
-    assert PgnigClient("u", "p", session_file=sf).token is None
+    assert MyorlenClient("u", "p", session_file=sf).token is None
 
 
 def test_login_wrong_credentials(mocked: responses.RequestsMock) -> None:
     mocked.add("POST", BASE + "/auth/login", status=403, body="")
     with pytest.raises(AuthenticationError, match="403"):
-        PgnigClient("u", "bad").login()
+        MyorlenClient("u", "bad").login()
 
 
 def test_login_error_code(mocked: responses.RequestsMock) -> None:
     add_json(mocked, "/auth/login", {"Code": 1025, "Token": None}, method="POST")
     with pytest.raises(AuthenticationError, match="blocked"):
-        PgnigClient("u", "p").login()
+        MyorlenClient("u", "p").login()
 
 
 def test_login_requires_credentials() -> None:
     with pytest.raises(AuthenticationError):
-        PgnigClient().login()
+        MyorlenClient().login()
 
 
 def test_relogin_on_401(mocked: responses.RequestsMock) -> None:
-    c = PgnigClient("u", "p")
+    c = MyorlenClient("u", "p")
     c.token = "stale"
     mocked.add("GET", BASE + "/crm/get-billing-summary", status=401, json={"Message": "denied"})
     login_ok(mocked, "fresh")
@@ -98,14 +98,14 @@ def test_relogin_on_401(mocked: responses.RequestsMock) -> None:
 
 
 def test_401_without_credentials(mocked: responses.RequestsMock) -> None:
-    c = PgnigClient()
+    c = MyorlenClient()
     c.token = "stale"
     mocked.add("GET", BASE + "/crm/get-billing-summary", status=401)
     with pytest.raises(AuthenticationError):
         c.get_billing_summary()
 
 
-def test_api_errors(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_api_errors(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     add_json(mocked, "/crm/get-invoices-v2", {"Code": 1, "Message": "bad"}, status=400)
     with pytest.raises(ApiError) as e:
         client.get_invoices()
@@ -118,14 +118,14 @@ def test_api_errors(client: PgnigClient, mocked: responses.RequestsMock) -> None
         client._get("/crm/get-refunds")
 
 
-def test_user_data_code_1_is_ok(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_user_data_code_1_is_ok(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     data = fixture_json("user_data")
     data["Code"] = 1
     add_json(mocked, "/crm/get-user-data", data)
     assert client.get_user().first_name == "Jan"
 
 
-def test_logout(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_logout(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     add_json(mocked, "/auth/logout", {"Code": 0}, method="POST")
     client.logout()
     assert mocked.calls[0].request.headers["AuthToken"] == TOKEN
@@ -135,7 +135,7 @@ def test_logout(client: PgnigClient, mocked: responses.RequestsMock) -> None:
 # ---- account -----------------------------------------------------------------
 
 
-def test_agreements(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_agreements(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     add_fixture(mocked, "/crm/get-agreements", "agreements")
     add_fixture(mocked, "/crm/get-all-agreements", "agreements")
     assert client.get_agreements()[0].number == AGREEMENT
@@ -143,7 +143,7 @@ def test_agreements(client: PgnigClient, mocked: responses.RequestsMock) -> None
     assert mocked.calls[1].request.url is not None and "get-all-agreements" in mocked.calls[1].request.url
 
 
-def test_agreement_details(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_agreement_details(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     add_fixture(mocked, "/crm/get-all-agreements", "agreements")
     add_fixture(mocked, "/crm/get-agreement-details", "agreement_details")
     a = client.get_agreement()
@@ -157,7 +157,7 @@ def test_agreement_details(client: PgnigClient, mocked: responses.RequestsMock) 
         client.get_agreement("nope")
 
 
-def test_meter_point_selection(client: PgnigClient, mocked: responses.RequestsMock, ppg_list: None) -> None:
+def test_meter_point_selection(client: MyorlenClient, mocked: responses.RequestsMock, ppg_list: None) -> None:
     assert client.get_meter_point().id == PPG
     assert client.get_meter_point("1111111").id == PPG  # local id works too
     with pytest.raises(NotFoundError):
@@ -171,7 +171,7 @@ def test_meter_point_selection(client: PgnigClient, mocked: responses.RequestsMo
         client.get_meter_point()
 
 
-def test_user_accounts_summary(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_user_accounts_summary(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     add_fixture(mocked, "/crm/get-user-data", "user_data")
     add_fixture(mocked, "/auth/get-related-accounts", "related")
     add_fixture(mocked, "/crm/get-billing-summary", "billing_summary")
@@ -185,7 +185,7 @@ def test_user_accounts_summary(client: PgnigClient, mocked: responses.RequestsMo
 # ---- invoices ----------------------------------------------------------------
 
 
-def test_get_invoices_params(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_get_invoices_params(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     add_fixture(mocked, "/crm/get-invoices-v2", "invoices_p2")
     client.get_invoices(
         page=2,
@@ -210,7 +210,7 @@ def test_get_invoices_params(client: PgnigClient, mocked: responses.RequestsMock
     assert query(mocked.calls[1])["afterDeadline"] == "true"
 
 
-def test_iter_invoices_follows_pages(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_iter_invoices_follows_pages(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     add_fixture(mocked, "/crm/get-invoices-v2", "invoices")
     add_fixture(mocked, "/crm/get-invoices-v2", "invoices_p2")
     invoices = list(client.iter_invoices(page_size=12))
@@ -218,7 +218,7 @@ def test_iter_invoices_follows_pages(client: PgnigClient, mocked: responses.Requ
     assert [query(c)["pageNumber"] for c in mocked.calls] == ["1", "2"]
 
 
-def test_get_invoice_routes_by_number(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_get_invoice_routes_by_number(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     add_fixture(mocked, "/crm/get-invoice-details", "invoice_details")
     add_fixture(mocked, "/crm/get-interest-note-details", "note_details")
     assert client.get_invoice("P/1234567/0001/26").kind == "R"
@@ -227,7 +227,7 @@ def test_get_invoice_routes_by_number(client: PgnigClient, mocked: responses.Req
     assert query(mocked.calls[1])["interestNoteNumber"] == "NO/1234567/000001/26"
 
 
-def test_download_invoice(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_download_invoice(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     mocked.add(
         "GET",
         BASE + "/crm/get-invoice-pdf",
@@ -245,7 +245,7 @@ def test_download_invoice(client: PgnigClient, mocked: responses.RequestsMock) -
     assert f.to_dict()["size"] == len(b"%PDF-1.4 test")
 
 
-def test_download_interest_note_without_pdf(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_download_interest_note_without_pdf(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     mocked.add(
         "GET",
         BASE + "/crm/get-interest-note-pdf",
@@ -259,7 +259,7 @@ def test_download_interest_note_without_pdf(client: PgnigClient, mocked: respons
 # ---- payments, history, messages ---------------------------------------------
 
 
-def test_payments_history_messages(client: PgnigClient, mocked: responses.RequestsMock) -> None:
+def test_payments_history_messages(client: MyorlenClient, mocked: responses.RequestsMock) -> None:
     add_fixture(mocked, "/crm/get-client-payments", "client_payments")
     add_fixture(mocked, "/crm/get-account-history", "account_history")
     add_fixture(mocked, "/notification/get-notifications", "notifications")
@@ -280,7 +280,7 @@ def test_payments_history_messages(client: PgnigClient, mocked: responses.Reques
 # ---- readings ----------------------------------------------------------------
 
 
-def test_readings_params(client: PgnigClient, mocked: responses.RequestsMock, ppg_list: None) -> None:
+def test_readings_params(client: MyorlenClient, mocked: responses.RequestsMock, ppg_list: None) -> None:
     add_fixture(mocked, "/crm/get-all-ppg-readings-for-meter", "readings")
     assert len(list(client.iter_readings())) == 2
     q = query(mocked.calls[-1])
@@ -291,7 +291,9 @@ def test_readings_params(client: PgnigClient, mocked: responses.RequestsMock, pp
     assert "ignoreStartDate" not in q
 
 
-def test_consumption_and_export(client: PgnigClient, mocked: responses.RequestsMock, ppg_list: None) -> None:
+def test_consumption_and_export(
+    client: MyorlenClient, mocked: responses.RequestsMock, ppg_list: None
+) -> None:
     add_fixture(mocked, "/crm/get-monthly-wear-chart-data", "monthly")
     add_fixture(mocked, "/crm/get-yearly-wear-chart-data", "yearly")
     add_fixture(mocked, "/crm/get-ppg-readings-dates", "reading_dates")
